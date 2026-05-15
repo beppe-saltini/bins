@@ -1,0 +1,10 @@
+Bins helps Central Bedfordshire residents see their next household bin collection at a glance.
+
+• Enter your postcode and pick your address
+• See whether the next collection is refuse (black bin) or recycling (green bin)
+• Home-screen widget with the same information
+• Optional app icon that switches between green and black to match the next collection
+
+Data is stored on your device. The app reads collection dates from the council’s public website when you are online.
+
+Not affiliated with Central Bedfordshire Council. For official services, use the council website.

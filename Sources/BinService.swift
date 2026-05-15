@@ -21,10 +21,10 @@ struct Address: Identifiable, Hashable {
     let text: String
 }
 
-let sharedDefaults = UserDefaults(suiteName: "group.com.beppe.BinsApp")!
+let sharedDefaults = UserDefaults(suiteName: "group.MCZH73T4Z2.bins") ?? .standard
 
 enum BinService {
-    private static let endpoint = URL(string: "https://www.centralbedfordshire.gov.uk/info/2/waste_and_recycling/601/bins_and_waste_collections")!
+    private static let endpoint = URL(string: "https://www.centralbedfordshire.gov.uk/info/163/bins_and_waste_collections_-_check_bin_collection_days")!
 
     // MARK: - Public API
 
@@ -64,6 +64,7 @@ enum BinService {
         req.httpMethod = "POST"
         req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         req.httpBody = body.data(using: .utf8)
+        req.timeoutInterval = 15
         let (data, _) = try await URLSession.shared.data(for: req)
         return String(data: data, encoding: .utf8) ?? ""
     }

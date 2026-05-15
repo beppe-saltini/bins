@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 struct SettingsView: View {
     @Binding var showSettings: Bool
@@ -96,6 +97,7 @@ struct SettingsView: View {
         savedPostcode = postcode
         savedUprn = addr.id
         savedAddressText = addr.text
+        WidgetCenter.shared.reloadAllTimelines()
         showSettings = false
     }
 }

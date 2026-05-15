@@ -15,8 +15,10 @@ struct BinEntry: TimelineEntry {
 // MARK: - Timeline Provider
 
 struct BinsTimelineProvider: TimelineProvider {
-    private let defaults = UserDefaults(suiteName: "group.com.beppe.BinsApp")!
-    private let endpoint = URL(string: "https://www.centralbedfordshire.gov.uk/info/2/waste_and_recycling/601/bins_and_waste_collections")!
+    private var defaults: UserDefaults {
+        UserDefaults(suiteName: "group.MCZH73T4Z2.bins") ?? .standard
+    }
+    private let endpoint = URL(string: "https://www.centralbedfordshire.gov.uk/info/163/bins_and_waste_collections_-_check_bin_collection_days")!
 
     func placeholder(in context: Context) -> BinEntry {
         BinEntry(date: Date(), binType: "green", collectionDate: Date(), isGuess: false, isConfigured: true)

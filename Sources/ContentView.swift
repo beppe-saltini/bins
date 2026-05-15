@@ -37,6 +37,9 @@ struct ContentView: View {
     private func refresh() async {
         guard let pc = postcode, let _ = uprn, let at = addressText else { return }
         let uprn = self.uprn!
+        if result == nil {
+            result = BinService.guessFromReference()
+        }
         let r = await BinService.getCurrentBin(postcode: pc, uprn: uprn, addressText: at)
         result = r
         BinService.updateIcon(type: r.collection.type)

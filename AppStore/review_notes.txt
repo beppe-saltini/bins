@@ -1,0 +1,14 @@
+This app is an unofficial utility for Central Bedfordshire (UK) residents.
+
+How to test:
+1. Open the app (no login required).
+2. Enter a Central Bedfordshire postcode, e.g. SG18 8BQ.
+3. Tap Search, then select an address from the list.
+4. The main screen shows the next collection type (Refuse/Recycling) and date.
+5. Add the Bins widget from the home screen to verify the widget shows the same data after setup.
+
+The app contacts centralbedfordshire.gov.uk over HTTPS to look up addresses and collection schedules, similar to using the council’s public bin-day checker in a browser. No account is created in our app.
+
+Background fetch may refresh data periodically for the widget.
+
+Not affiliated with Central Bedfordshire Council.
