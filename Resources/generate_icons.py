@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate app icons: grey primary (from green artwork), green/black alternates, App Store 1024."""
+"""Generate app icons: grey primary, green/black alternates (from bin artwork), notification sizes."""
 import struct
 import subprocess
 import sys
@@ -9,8 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 APPICON_DIR = ROOT / "Assets.xcassets" / "AppIcon.appiconset"
 GREEN_BIN_SRC = ROOT / "GreenBin@3x.png"
+BLACK_BIN_SRC = ROOT / "BlackBin@3x.png"
 GREY_BIN_SRC = ROOT / "GreyBin@3x.png"
 GREY_PROFILE = "/System/Library/ColorSync/Profiles/Generic Gray Gamma 2.2 Profile.icc"
+
+# Real bin PNGs are much larger than solid-colour placeholders (~300 bytes).
+MIN_ARTWORK_BYTES = 2000
 
 
 def create_png(path: Path, r: int, g: int, b: int, size: int) -> None:
@@ -28,13 +32,13 @@ def create_png(path: Path, r: int, g: int, b: int, size: int) -> None:
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(sig + ihdr + idat + iend)
-    print(f"  {path.relative_to(ROOT.parent)} ({size}x{size})")
+    print(f"  {path.relative_to(ROOT.parent)} ({size}x{size}, solid placeholder)")
 
 
 def sips_resize(src: Path, dest: Path, size: int) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(["sips", "-z", str(size), str(size), str(src), "--out", str(dest)], check=True)
-    print(f"  {dest.relative_to(ROOT.parent)} ({size}x{size})")
+    print(f"  {dest.relative_to(ROOT.parent)} ({size}x{size}, from {src.name})")
 
 
 def sips_greyscale(src: Path, dest: Path) -> None:
@@ -46,19 +50,31 @@ def sips_greyscale(src: Path, dest: Path) -> None:
     print(f"  {dest.relative_to(ROOT.parent)} (greyscale from {src.name})")
 
 
-def create_legacy_colored_bins() -> None:
-    print("Regenerating colored alternate icon PNGs...")
-    create_png(ROOT / "GreenBin-152.png", 76, 175, 80, 152)
-    create_png(ROOT / "BlackBin-152.png", 30, 30, 30, 152)
-    create_png(ROOT / "GreenBin@2x.png", 76, 175, 80, 120)
-    create_png(ROOT / "GreenBin@3x.png", 76, 175, 80, 180)
-    create_png(ROOT / "BlackBin@2x.png", 30, 30, 30, 120)
-    create_png(ROOT / "BlackBin@3x.png", 30, 30, 30, 180)
+def is_real_artwork(path: Path) -> bool:
+    return path.exists() and path.stat().st_size >= MIN_ARTWORK_BYTES
+
+
+def create_solid_placeholders() -> None:
+    """Only for missing artwork — never overwrites real bin graphics."""
+    print("Creating solid placeholders for missing files only...")
+    if not is_real_artwork(GREEN_BIN_SRC):
+        create_png(ROOT / "GreenBin@2x.png", 76, 175, 80, 120)
+        create_png(GREEN_BIN_SRC, 76, 175, 80, 180)
+    if not is_real_artwork(BLACK_BIN_SRC):
+        create_png(ROOT / "BlackBin@2x.png", 30, 30, 30, 120)
+        create_png(BLACK_BIN_SRC, 30, 30, 30, 180)
+
+
+def resize_notification_assets() -> None:
+    if is_real_artwork(GREEN_BIN_SRC):
+        sips_resize(GREEN_BIN_SRC, ROOT / "GreenBin-152.png", 152)
+    if is_real_artwork(BLACK_BIN_SRC):
+        sips_resize(BLACK_BIN_SRC, ROOT / "BlackBin-152.png", 152)
 
 
 def create_grey_bins_from_green() -> None:
-    if not GREEN_BIN_SRC.exists():
-        print(f"  Missing {GREEN_BIN_SRC.name}; run with --legacy first.")
+    if not is_real_artwork(GREEN_BIN_SRC):
+        print(f"  ERROR: {GREEN_BIN_SRC.name} missing or placeholder. Restore bin artwork first.")
         sys.exit(1)
 
     print("Deriving grey primary icon from GreenBin@3x...")
@@ -68,24 +84,22 @@ def create_grey_bins_from_green() -> None:
 
 
 def create_app_store_icon_from_grey() -> None:
-    """1024×1024 marketing / AppIcon — neutral grey bin (primary icon)."""
     if not GREY_BIN_SRC.exists():
-        print(f"  Missing {GREY_BIN_SRC.name}; generating grey bins first.")
         create_grey_bins_from_green()
 
+    print("Generating App Store / AppIcon from grey artwork...")
     for dest in (
         APPICON_DIR / "AppIcon-1024.png",
         ROOT.parent / "AppStore" / "app-icon-1024.png",
     ):
         sips_resize(GREY_BIN_SRC, dest, 1024)
-        print(f"    -> App Store / asset catalog (grey primary)")
 
 
 def main() -> None:
-    if "--legacy" in sys.argv or not GREEN_BIN_SRC.exists():
-        create_legacy_colored_bins()
+    if "--solid-placeholders" in sys.argv:
+        create_solid_placeholders()
     create_grey_bins_from_green()
-    print("Generating App Store / AppIcon from grey artwork...")
+    resize_notification_assets()
     create_app_store_icon_from_grey()
     print("Done.")
 
