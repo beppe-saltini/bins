@@ -175,13 +175,15 @@ enum BinService {
     }
 
     static func updateIcon(type: BinType) {
-        let desired = (type == .black) ? "BlackBin" : "GreenBin"
-        guard UIApplication.shared.alternateIconName != desired else { return }
         guard UIApplication.shared.supportsAlternateIcons else { return }
+
+        // Primary icon is green; only switch to alternate for refuse week.
+        let desired: String? = (type == .black) ? "BlackBin" : nil
+        guard UIApplication.shared.alternateIconName != desired else { return }
 
         UIApplication.shared.setAlternateIconName(desired) { error in
             if let error {
-                NSLog("Bins: failed to set app icon to \(desired): \(error.localizedDescription)")
+                NSLog("Bins: failed to set app icon: \(error.localizedDescription)")
             }
         }
     }

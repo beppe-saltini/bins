@@ -55,16 +55,13 @@ targets:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:
           - com.beppe.BinsApp.refresh
-        CFBundleShortVersionString: "1.0.1"
-        CFBundleVersion: "8"
+        CFBundleShortVersionString: "1.0.2"
+        CFBundleVersion: "9"
         CFBundleIcons:
           CFBundlePrimaryIcon:
             CFBundleIconFiles:
-              - GreyBin
+              - GreenBin
           CFBundleAlternateIcons:
-            GreenBin:
-              CFBundleIconFiles:
-                - GreenBin
             BlackBin:
               CFBundleIconFiles:
                 - BlackBin
@@ -90,7 +87,7 @@ targets:
       path: BinsWidget-Info.plist
       properties:
         CFBundleDisplayName: BinsWidget
-        CFBundleShortVersionString: "1.0.1"
-        CFBundleVersion: "8"
+        CFBundleShortVersionString: "1.0.2"
+        CFBundleVersion: "9"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
