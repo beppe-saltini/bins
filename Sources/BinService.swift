@@ -16,6 +16,11 @@ struct BinResult {
     let isGuess: Bool
 }
 
+struct UpcomingSchedule {
+    let collections: [BinCollection]
+    let isGuess: Bool
+}
+
 struct Address: Identifiable, Hashable {
     let id: String
     let text: String
@@ -34,7 +39,7 @@ enum BinService {
         return parseAddresses(from: html)
     }
 
-    static func getCurrentBin(postcode: String, uprn: String, addressText: String) async -> BinResult {
+    static func upcomingCollections(postcode: String, uprn: String, addressText: String) async -> UpcomingSchedule {
         do {
             let body = formEncode([
                 "postcode": postcode,
@@ -44,17 +49,25 @@ enum BinService {
             ])
             let html = try await post(body: body)
             let collections = parseCollections(from: html)
-            let today = Calendar.current.startOfDay(for: Date())
+            let today = calendar.startOfDay(for: Date())
+            let upcoming = collections.filter { $0.date >= today }
 
-            if let next = collections.first(where: { $0.date >= today }) {
-                saveReference(date: next.date, type: next.type)
-                return BinResult(collection: next, isGuess: false)
+            if let first = upcoming.first {
+                saveReference(date: first.date, type: first.type)
+                return UpcomingSchedule(collections: upcoming, isGuess: false)
             }
         } catch {
             // Network unavailable — fall through to offline guess
         }
 
-        return guessFromReference()
+        let guess = guessFromReference()
+        return UpcomingSchedule(collections: [guess.collection], isGuess: true)
+    }
+
+    static func getCurrentBin(postcode: String, uprn: String, addressText: String) async -> BinResult {
+        let schedule = await upcomingCollections(postcode: postcode, uprn: uprn, addressText: addressText)
+        guard let first = schedule.collections.first else { return guessFromReference() }
+        return BinResult(collection: first, isGuess: schedule.isGuess)
     }
 
     // MARK: - Networking
@@ -114,19 +127,58 @@ enum BinService {
         }.sorted { $0.date < $1.date }
     }
 
-    // MARK: - App Icon
+    // MARK: - App Icon (alternate icon on the home screen app grid)
+
+    private static var calendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.locale = Locale(identifier: "en_GB")
+        cal.timeZone = .current
+        return cal
+    }
+
+    /// Friday = weekday 6 in `Calendar` (Sunday is 1).
+    static func isFriday(_ date: Date = Date()) -> Bool {
+        calendar.component(.weekday, from: date) == 6
+    }
+
+    /// Next Friday at 07:00 local time, for scheduling background refresh.
+    static func nextFridayMorning(from date: Date = Date()) -> Date {
+        let startOfToday = calendar.startOfDay(for: date)
+        let weekday = calendar.component(.weekday, from: date)
+        let daysUntilFriday = (6 - weekday + 7) % 7
+        guard var friday = calendar.date(byAdding: .day, value: daysUntilFriday, to: startOfToday) else {
+            return date.addingTimeInterval(3600)
+        }
+        var comps = calendar.dateComponents([.year, .month, .day], from: friday)
+        comps.hour = 7
+        comps.minute = 0
+        guard var result = calendar.date(from: comps) else { return date.addingTimeInterval(3600) }
+        if result <= date {
+            guard let nextWeek = calendar.date(byAdding: .day, value: 7, to: friday) else { return result }
+            comps = calendar.dateComponents([.year, .month, .day], from: nextWeek)
+            comps.hour = 7
+            comps.minute = 0
+            result = calendar.date(from: comps) ?? result
+        }
+        return result
+    }
+
+    /// Fetches the next collection and updates the alternate app icon (green / black).
+    static func refreshAppIconFromStoredAddress() async {
+        guard let postcode = sharedDefaults.string(forKey: "postcode"),
+              let uprn = sharedDefaults.string(forKey: "uprn"),
+              let addressText = sharedDefaults.string(forKey: "addressText") else { return }
+        let result = await getCurrentBin(postcode: postcode, uprn: uprn, addressText: addressText)
+        await MainActor.run {
+            updateIcon(type: result.collection.type)
+        }
+    }
 
     static func updateIcon(type: BinType) {
-        let desired: String? = (type == .black) ? "BlackBin" : nil
+        let desired = (type == .black) ? "BlackBin" : "GreenBin"
         guard UIApplication.shared.alternateIconName != desired else { return }
 
-        let selector = NSSelectorFromString("_setAlternateIconName:completionHandler:")
-        guard UIApplication.shared.responds(to: selector) else { return }
-
-        typealias SetIconFn = @convention(c) (AnyObject, Selector, AnyObject?, AnyObject?) -> Void
-        let imp = UIApplication.shared.method(for: selector)
-        let fn = unsafeBitCast(imp, to: SetIconFn.self)
-        fn(UIApplication.shared, selector, desired as NSString?, nil)
+        UIApplication.shared.setAlternateIconName(desired) { _ in }
     }
 
     // MARK: - Offline Fallback

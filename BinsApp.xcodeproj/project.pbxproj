@@ -10,8 +10,12 @@
 		03CA338311E4C19ABB1B6050 /* BinsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B092DC37D05877C1B00808EE /* BinsApp.swift */; };
 		0728C557D032326FC29DB289 /* BlackBin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F1AD43025968D9D3E3BE722 /* BlackBin@3x.png */; };
 		11297D9C54D6B14E93962D12 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 64B485548AF34F09A1156F1A /* PrivacyInfo.xcprivacy */; };
+		25119B0C6A13FE93307E5FE9 /* GreyBin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B7D40269CCCC40C8ED670F8E /* GreyBin@3x.png */; };
+		27609A21F197DA5B6897F774 /* ReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C12C44A05F1221E7B4BEDF3 /* ReminderScheduler.swift */; };
 		2E32D882E0BABE1CDA300EF8 /* BinsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCAB58E9B19DA587A0D9992 /* BinsWidget.swift */; };
+		4F1C5DCFF8B4DAA4F17A2EFF /* GreenBin-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A0CE8F9E49B7EC1A9CFF17E /* GreenBin-152.png */; };
 		52AA314BE9B7E1ADBC9F889F /* GreenBin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 521FADBA0A3B6DF5F646971D /* GreenBin@3x.png */; };
+		548E85B37C48D04EF15B5560 /* GreyBin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AB6F894EF910F092FF0CB34 /* GreyBin@2x.png */; };
 		5F31A20B728787159D3FCA80 /* BinsWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3999638BEC6777E6ADD023C0 /* BinsWidget.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		64F1955B1A5688688DC8BAEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CFE023E1A47F191548123A6 /* Assets.xcassets */; };
 		717F56C6023FDD90A9DEE94F /* BinService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6837BD7637E54DE91E033CE0 /* BinService.swift */; };
@@ -19,7 +23,9 @@
 		928D8A1C6E0F7CCE2ABABDBA /* GreenBin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 722A984BECA34EA03B427A78 /* GreenBin@2x.png */; };
 		A7611D660173B4DF16CD8462 /* BlackBin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7FEDCEB4171DCE410C58B564 /* BlackBin@2x.png */; };
 		A8E2E04212C3686385C5D00B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 64B485548AF34F09A1156F1A /* PrivacyInfo.xcprivacy */; };
+		AE0C5F48E46D352EE0689DF7 /* GreyBin-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A58F65F078DED3CCBD1C9B4 /* GreyBin-152.png */; };
 		AFFE215E92F0402FE6FD0A64 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16501DB69F0A79AB49C4D3E7 /* ContentView.swift */; };
+		E2655A7A7985D25D64962893 /* BlackBin-152.png in Resources */ = {isa = PBXBuildFile; fileRef = 495F524046A4BD10FF535354 /* BlackBin-152.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,18 +54,24 @@
 
 /* Begin PBXFileReference section */
 		16501DB69F0A79AB49C4D3E7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1A0CE8F9E49B7EC1A9CFF17E /* GreenBin-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreenBin-152.png"; sourceTree = "<group>"; };
 		2BCAB58E9B19DA587A0D9992 /* BinsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinsWidget.swift; sourceTree = "<group>"; };
 		3999638BEC6777E6ADD023C0 /* BinsWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = BinsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		495F524046A4BD10FF535354 /* BlackBin-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackBin-152.png"; sourceTree = "<group>"; };
 		521FADBA0A3B6DF5F646971D /* GreenBin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreenBin@3x.png"; sourceTree = "<group>"; };
+		5C12C44A05F1221E7B4BEDF3 /* ReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduler.swift; sourceTree = "<group>"; };
 		64B485548AF34F09A1156F1A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6837BD7637E54DE91E033CE0 /* BinService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinService.swift; sourceTree = "<group>"; };
 		6CFE023E1A47F191548123A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		722A984BECA34EA03B427A78 /* GreenBin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreenBin@2x.png"; sourceTree = "<group>"; };
 		76BEFF13C2849D1693E28293 /* BinsApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BinsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A58F65F078DED3CCBD1C9B4 /* GreyBin-152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreyBin-152.png"; sourceTree = "<group>"; };
 		7FEDCEB4171DCE410C58B564 /* BlackBin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackBin@2x.png"; sourceTree = "<group>"; };
+		8AB6F894EF910F092FF0CB34 /* GreyBin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreyBin@2x.png"; sourceTree = "<group>"; };
 		8F1AD43025968D9D3E3BE722 /* BlackBin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackBin@3x.png"; sourceTree = "<group>"; };
 		B092DC37D05877C1B00808EE /* BinsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinsApp.swift; sourceTree = "<group>"; };
 		B5DA178BD38360269C809522 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B7D40269CCCC40C8ED670F8E /* GreyBin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "GreyBin@3x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -75,10 +87,15 @@
 			isa = PBXGroup;
 			children = (
 				6CFE023E1A47F191548123A6 /* Assets.xcassets */,
+				495F524046A4BD10FF535354 /* BlackBin-152.png */,
 				7FEDCEB4171DCE410C58B564 /* BlackBin@2x.png */,
 				8F1AD43025968D9D3E3BE722 /* BlackBin@3x.png */,
+				1A0CE8F9E49B7EC1A9CFF17E /* GreenBin-152.png */,
 				722A984BECA34EA03B427A78 /* GreenBin@2x.png */,
 				521FADBA0A3B6DF5F646971D /* GreenBin@3x.png */,
+				7A58F65F078DED3CCBD1C9B4 /* GreyBin-152.png */,
+				8AB6F894EF910F092FF0CB34 /* GreyBin@2x.png */,
+				B7D40269CCCC40C8ED670F8E /* GreyBin@3x.png */,
 				64B485548AF34F09A1156F1A /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
@@ -90,6 +107,7 @@
 				B092DC37D05877C1B00808EE /* BinsApp.swift */,
 				6837BD7637E54DE91E033CE0 /* BinService.swift */,
 				16501DB69F0A79AB49C4D3E7 /* ContentView.swift */,
+				5C12C44A05F1221E7B4BEDF3 /* ReminderScheduler.swift */,
 				B5DA178BD38360269C809522 /* SettingsView.swift */,
 			);
 			path = Sources;
@@ -208,10 +226,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				64F1955B1A5688688DC8BAEA /* Assets.xcassets in Resources */,
+				E2655A7A7985D25D64962893 /* BlackBin-152.png in Resources */,
 				A7611D660173B4DF16CD8462 /* BlackBin@2x.png in Resources */,
 				0728C557D032326FC29DB289 /* BlackBin@3x.png in Resources */,
+				4F1C5DCFF8B4DAA4F17A2EFF /* GreenBin-152.png in Resources */,
 				928D8A1C6E0F7CCE2ABABDBA /* GreenBin@2x.png in Resources */,
 				52AA314BE9B7E1ADBC9F889F /* GreenBin@3x.png in Resources */,
+				AE0C5F48E46D352EE0689DF7 /* GreyBin-152.png in Resources */,
+				548E85B37C48D04EF15B5560 /* GreyBin@2x.png in Resources */,
+				25119B0C6A13FE93307E5FE9 /* GreyBin@3x.png in Resources */,
 				11297D9C54D6B14E93962D12 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -226,6 +249,7 @@
 				717F56C6023FDD90A9DEE94F /* BinService.swift in Sources */,
 				03CA338311E4C19ABB1B6050 /* BinsApp.swift in Sources */,
 				AFFE215E92F0402FE6FD0A64 /* ContentView.swift in Sources */,
+				27609A21F197DA5B6897F774 /* ReminderScheduler.swift in Sources */,
 				8B739B1C73D5DDC6AACF193D /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,7 +289,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beppe.BinsApp.BinsWidget;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -403,7 +427,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beppe.BinsApp;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -422,7 +446,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beppe.BinsApp;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -442,7 +466,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.beppe.BinsApp.BinsWidget;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};

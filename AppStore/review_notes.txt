@@ -1,14 +1,18 @@
 This app is an unofficial utility for Central Bedfordshire (UK) residents.
 
+Test postcode: SG18 8BQ
+
 How to test:
 1. Open the app (no login required).
-2. Enter a Central Bedfordshire postcode, e.g. SG18 8BQ.
-3. Tap Search, then select an address from the list.
+2. Enter postcode SG18 8BQ and tap Search.
+3. Select an address from the list (e.g. 1 Mill Close, SG18 8BQ).
 4. The main screen shows the next collection type (Refuse/Recycling) and date.
 5. Add the Bins widget from the home screen to verify the widget shows the same data after setup.
 
 The app contacts centralbedfordshire.gov.uk over HTTPS to look up addresses and collection schedules, similar to using the council’s public bin-day checker in a browser. No account is created in our app.
 
-Background fetch may refresh data periodically for the widget.
+Background fetch may refresh the app icon and widget on Friday mornings (best-effort). Opening the app any day updates the home screen icon to green (recycling) or black (refuse). The primary app icon is a neutral grey bin (used on notifications); reminders include a green or black bin thumbnail for the collection type.
+
+To test reminders: enable Collection reminders in Settings (gear), allow notifications when prompted, and optionally set reminder time a minute or two ahead for a same-day test.
 
 Not affiliated with Central Bedfordshire Council.

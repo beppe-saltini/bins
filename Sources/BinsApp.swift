@@ -18,10 +18,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         Self.migrateToSharedDefaults()
+        if sharedDefaults.string(forKey: "uprn") != nil {
+            Task { await BinService.refreshAppIconFromStoredAddress() }
+        }
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.taskId, using: nil) { task in
             Self.handleRefresh(task: task as! BGAppRefreshTask)
         }
-        Self.scheduleRefresh()
+        Self.scheduleFridayRefresh()
         return true
     }
 
@@ -38,28 +41,24 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         if let date = old.object(forKey: "refDate") as? Date {
             sharedDefaults.set(date, forKey: "refDate")
         }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
-    static func scheduleRefresh() {
+    /// Background refresh is scheduled for Friday morning only (best-effort).
+    /// Opening the app any day still updates the icon in `ContentView.refresh()`.
+    static func scheduleFridayRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: taskId)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 24 * 3600)
+        request.earliestBeginDate = BinService.nextFridayMorning()
         try? BGTaskScheduler.shared.submit(request)
     }
 
     static func handleRefresh(task: BGAppRefreshTask) {
-        scheduleRefresh()
+        scheduleFridayRefresh()
 
         let operation = Task {
-            guard let postcode = sharedDefaults.string(forKey: "postcode"),
-                  let uprn = sharedDefaults.string(forKey: "uprn"),
-                  let addressText = sharedDefaults.string(forKey: "addressText") else {
-                return
-            }
-
-            let result = await BinService.getCurrentBin(postcode: postcode, uprn: uprn, addressText: addressText)
-
-            DispatchQueue.main.async {
-                BinService.updateIcon(type: result.collection.type)
+            await BinService.refreshAppIconFromStoredAddress()
+            await ReminderScheduler.rescheduleFromStoredAddress()
+            await MainActor.run {
                 WidgetCenter.shared.reloadAllTimelines()
             }
         }

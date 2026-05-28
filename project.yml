@@ -29,11 +29,15 @@ targets:
           - "PrivacyInfo.xcprivacy"
     entitlements:
       path: BinsApp.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.MCZH73T4Z2.bins
     settings:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: MCZH73T4Z2
+      TARGETED_DEVICE_FAMILY: "1"
     dependencies:
       - target: BinsWidget
         embed: true
@@ -43,16 +47,23 @@ targets:
       properties:
         CFBundleDisplayName: Bins
         ITSAppUsesNonExemptEncryption: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
         UILaunchScreen: {}
         UIBackgroundModes:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:
           - com.beppe.BinsApp.refresh
+        CFBundleShortVersionString: "1.0.1"
+        CFBundleVersion: "8"
         CFBundleIcons:
           CFBundlePrimaryIcon:
             CFBundleIconFiles:
-              - GreenBin
+              - GreyBin
           CFBundleAlternateIcons:
+            GreenBin:
+              CFBundleIconFiles:
+                - GreenBin
             BlackBin:
               CFBundleIconFiles:
                 - BlackBin
@@ -64,15 +75,21 @@ targets:
       - path: Resources/PrivacyInfo.xcprivacy
     entitlements:
       path: BinsWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.MCZH73T4Z2.bins
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.beppe.BinsApp.BinsWidget
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: MCZH73T4Z2
       CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: "YES"
+      TARGETED_DEVICE_FAMILY: "1"
     info:
       path: BinsWidget-Info.plist
       properties:
         CFBundleDisplayName: BinsWidget
+        CFBundleShortVersionString: "1.0.1"
+        CFBundleVersion: "8"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

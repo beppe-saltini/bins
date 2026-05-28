@@ -7,11 +7,16 @@ struct SettingsView: View {
     @AppStorage("postcode", store: sharedDefaults) private var savedPostcode: String?
     @AppStorage("uprn", store: sharedDefaults) private var savedUprn: String?
     @AppStorage("addressText", store: sharedDefaults) private var savedAddressText: String?
+    @AppStorage("remindersEnabled", store: sharedDefaults) private var remindersEnabled = true
+    @AppStorage("reminderHour", store: sharedDefaults) private var reminderHour = 20
+    @AppStorage("reminderMinute", store: sharedDefaults) private var reminderMinute = 0
 
     @State private var postcode = ""
     @State private var addresses: [Address] = []
     @State private var searching = false
     @State private var error: String?
+    @State private var reminderTime = Calendar.current.date(from: DateComponents(hour: 20, minute: 0)) ?? Date()
+    @State private var notificationsDenied = false
 
     private var isFirstLaunch: Bool { savedUprn == nil }
 
@@ -56,6 +61,35 @@ struct SettingsView: View {
                     }
                 }
 
+                if savedUprn != nil {
+                    Section {
+                        Toggle("Collection reminders", isOn: $remindersEnabled)
+
+                        if remindersEnabled {
+                            DatePicker(
+                                "Reminder time",
+                                selection: $reminderTime,
+                                displayedComponents: .hourAndMinute
+                            )
+                            Text("Day before collection")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if notificationsDenied && remindersEnabled {
+                            Text("Enable notifications in iOS Settings to receive reminders.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } header: {
+                        Text("Reminders")
+                    } footer: {
+                        if remindersEnabled {
+                            Text("Notifies you the evening before each bin collection.")
+                        }
+                    }
+                }
+
                 if let error {
                     Section {
                         Text(error).foregroundStyle(.red)
@@ -74,6 +108,24 @@ struct SettingsView: View {
                 if postcode.isEmpty {
                     postcode = savedPostcode ?? "SG18 8BQ"
                 }
+                reminderTime = reminderDate(hour: reminderHour, minute: reminderMinute)
+                Task { await refreshNotificationStatus() }
+            }
+            .onChange(of: remindersEnabled) { _, enabled in
+                Task {
+                    if enabled {
+                        await ReminderScheduler.rescheduleFromStoredAddress()
+                    } else {
+                        await ReminderScheduler.cancelAll()
+                    }
+                    await refreshNotificationStatus()
+                }
+            }
+            .onChange(of: reminderTime) { _, newTime in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: newTime)
+                reminderHour = comps.hour ?? 20
+                reminderMinute = comps.minute ?? 0
+                Task { await ReminderScheduler.rescheduleFromStoredAddress() }
             }
         }
     }
@@ -98,6 +150,18 @@ struct SettingsView: View {
         savedUprn = addr.id
         savedAddressText = addr.text
         WidgetCenter.shared.reloadAllTimelines()
+        Task { await ReminderScheduler.rescheduleFromStoredAddress() }
         showSettings = false
+    }
+
+    private func refreshNotificationStatus() async {
+        let denied = await ReminderScheduler.isNotificationsDenied()
+        await MainActor.run {
+            notificationsDenied = denied
+        }
+    }
+
+    private func reminderDate(hour: Int, minute: Int) -> Date {
+        Calendar.current.date(from: DateComponents(hour: hour, minute: minute)) ?? Date()
     }
 }
