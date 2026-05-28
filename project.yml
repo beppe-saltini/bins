@@ -46,6 +46,7 @@ targets:
       path: Info.plist
       properties:
         CFBundleDisplayName: Bins
+        UIApplicationSupportsAlternateIcons: true
         ITSAppUsesNonExemptEncryption: false
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

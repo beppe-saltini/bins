@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate app icons: grey primary, green/black alternates (from bin artwork), notification sizes."""
+"""Generate app icons: grey primary, green/black alternates, notification thumbnails."""
+import shutil
 import struct
 import subprocess
 import sys
@@ -7,13 +8,14 @@ import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+CACHE = ROOT / ".icon-cache"
 APPICON_DIR = ROOT / "Assets.xcassets" / "AppIcon.appiconset"
-GREEN_BIN_SRC = ROOT / "GreenBin@3x.png"
-BLACK_BIN_SRC = ROOT / "BlackBin@3x.png"
+GREEN_BUNDLE = ROOT / "GreenBin@3x.png"
+BLACK_BUNDLE = ROOT / "BlackBin@3x.png"
 GREY_BIN_SRC = ROOT / "GreyBin@3x.png"
 GREY_PROFILE = "/System/Library/ColorSync/Profiles/Generic Gray Gamma 2.2 Profile.icc"
+PAD_COLOR = "E8E8E8"  # light grey tile so black bin is visible on the home screen
 
-# Real bin PNGs are much larger than solid-colour placeholders (~300 bytes).
 MIN_ARTWORK_BYTES = 2000
 
 
@@ -38,7 +40,7 @@ def create_png(path: Path, r: int, g: int, b: int, size: int) -> None:
 def sips_resize(src: Path, dest: Path, size: int) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(["sips", "-z", str(size), str(size), str(src), "--out", str(dest)], check=True)
-    print(f"  {dest.relative_to(ROOT.parent)} ({size}x{size}, from {src.name})")
+    print(f"  {dest.relative_to(ROOT.parent)} ({size}x{size})")
 
 
 def sips_greyscale(src: Path, dest: Path) -> None:
@@ -47,60 +49,102 @@ def sips_greyscale(src: Path, dest: Path) -> None:
         ["sips", "-s", "format", "png", "-m", GREY_PROFILE, str(src), "--out", str(dest)],
         check=True,
     )
-    print(f"  {dest.relative_to(ROOT.parent)} (greyscale from {src.name})")
+    print(f"  {dest.relative_to(ROOT.parent)} (greyscale)")
+
+
+def sips_homescreen_icon(src: Path, dest: Path, size: int) -> None:
+    """Shrink artwork slightly and pad to a light square — readable on the home screen."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    inner = max(1, int(size * 0.86))
+    subprocess.run(["sips", "-z", str(inner), str(inner), str(src), "--out", str(dest)], check=True)
+    subprocess.run(
+        [
+            "sips",
+            "--padToHeightWidth",
+            str(size),
+            str(size),
+            "--padColor",
+            PAD_COLOR,
+            str(dest),
+            "--out",
+            str(dest),
+        ],
+        check=True,
+    )
+    print(f"  {dest.relative_to(ROOT.parent)} ({size}x{size}, padded)")
 
 
 def is_real_artwork(path: Path) -> bool:
     return path.exists() and path.stat().st_size >= MIN_ARTWORK_BYTES
 
 
-def create_solid_placeholders() -> None:
-    """Only for missing artwork — never overwrites real bin graphics."""
-    print("Creating solid placeholders for missing files only...")
-    if not is_real_artwork(GREEN_BIN_SRC):
-        create_png(ROOT / "GreenBin@2x.png", 76, 175, 80, 120)
-        create_png(GREEN_BIN_SRC, 76, 175, 80, 180)
-    if not is_real_artwork(BLACK_BIN_SRC):
-        create_png(ROOT / "BlackBin@2x.png", 30, 30, 30, 120)
-        create_png(BLACK_BIN_SRC, 30, 30, 30, 180)
+def refresh_icon_cache() -> tuple[Path, Path]:
+    CACHE.mkdir(parents=True, exist_ok=True)
+    green = CACHE / "green-source@3x.png"
+    black = CACHE / "black-source@3x.png"
 
+    if is_real_artwork(GREEN_BUNDLE):
+        shutil.copy2(GREEN_BUNDLE, green)
+    if is_real_artwork(BLACK_BUNDLE):
+        shutil.copy2(BLACK_BUNDLE, black)
 
-def resize_notification_assets() -> None:
-    if is_real_artwork(GREEN_BIN_SRC):
-        sips_resize(GREEN_BIN_SRC, ROOT / "GreenBin-152.png", 152)
-    if is_real_artwork(BLACK_BIN_SRC):
-        sips_resize(BLACK_BIN_SRC, ROOT / "BlackBin-152.png", 152)
-
-
-def create_grey_bins_from_green() -> None:
-    if not is_real_artwork(GREEN_BIN_SRC):
-        print(f"  ERROR: {GREEN_BIN_SRC.name} missing or placeholder. Restore bin artwork first.")
+    if not is_real_artwork(green):
+        print("ERROR: Missing GreenBin@3x artwork. Restore from git or add PNG.")
+        sys.exit(1)
+    if not is_real_artwork(black):
+        print("ERROR: Missing BlackBin@3x artwork.")
         sys.exit(1)
 
-    print("Deriving grey primary icon from GreenBin@3x...")
-    sips_greyscale(GREEN_BIN_SRC, GREY_BIN_SRC)
-    sips_resize(GREY_BIN_SRC, ROOT / "GreyBin@2x.png", 120)
-    sips_resize(GREY_BIN_SRC, ROOT / "GreyBin-152.png", 152)
+    return green, black
 
 
-def create_app_store_icon_from_grey() -> None:
-    if not GREY_BIN_SRC.exists():
-        create_grey_bins_from_green()
-
-    print("Generating App Store / AppIcon from grey artwork...")
-    for dest in (
-        APPICON_DIR / "AppIcon-1024.png",
-        ROOT.parent / "AppStore" / "app-icon-1024.png",
-    ):
-        sips_resize(GREY_BIN_SRC, dest, 1024)
+def create_solid_placeholders() -> None:
+    print("Creating solid placeholders for missing files only...")
+    if not is_real_artwork(GREEN_BUNDLE):
+        create_png(ROOT / "GreenBin@2x.png", 76, 175, 80, 120)
+        create_png(GREEN_BUNDLE, 76, 175, 80, 180)
+    if not is_real_artwork(BLACK_BUNDLE):
+        create_png(ROOT / "BlackBin@2x.png", 30, 30, 30, 120)
+        create_png(BLACK_BUNDLE, 30, 30, 30, 180)
 
 
 def main() -> None:
     if "--solid-placeholders" in sys.argv:
         create_solid_placeholders()
-    create_grey_bins_from_green()
-    resize_notification_assets()
-    create_app_store_icon_from_grey()
+
+    if "--refresh-cache" in sys.argv or not (CACHE / "green-source@3x.png").exists():
+        print("Refreshing icon source cache...")
+        green_src, black_src = refresh_icon_cache()
+    else:
+        green_src = CACHE / "green-source@3x.png"
+        black_src = CACHE / "black-source@3x.png"
+        if not green_src.exists():
+            green_src, black_src = refresh_icon_cache()
+
+    print("Building home-screen icons (light grey tile)...")
+    sips_homescreen_icon(green_src, GREEN_BUNDLE, 180)
+    sips_homescreen_icon(green_src, ROOT / "GreenBin@2x.png", 120)
+    sips_homescreen_icon(black_src, BLACK_BUNDLE, 180)
+    sips_homescreen_icon(black_src, ROOT / "BlackBin@2x.png", 120)
+
+    print("Deriving grey primary from green artwork...")
+    grey_raw = CACHE / "grey-raw@3x.png"
+    sips_greyscale(green_src, grey_raw)
+    sips_homescreen_icon(grey_raw, GREY_BIN_SRC, 180)
+    sips_homescreen_icon(grey_raw, ROOT / "GreyBin@2x.png", 120)
+
+    print("Notification thumbnails (uncropped colour)...")
+    sips_resize(green_src, ROOT / "GreenBin-152.png", 152)
+    sips_resize(black_src, ROOT / "BlackBin-152.png", 152)
+    sips_resize(grey_raw, ROOT / "GreyBin-152.png", 152)
+
+    print("App Store / asset catalog 1024...")
+    for dest in (
+        APPICON_DIR / "AppIcon-1024.png",
+        ROOT.parent / "AppStore" / "app-icon-1024.png",
+    ):
+        sips_homescreen_icon(grey_raw, dest, 1024)
+
     print("Done.")
 
 
