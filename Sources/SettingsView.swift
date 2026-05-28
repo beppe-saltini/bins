@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import WidgetKit
 
 struct SettingsView: View {
@@ -19,6 +20,17 @@ struct SettingsView: View {
     @State private var notificationsDenied = false
 
     private var isFirstLaunch: Bool { savedUprn == nil }
+
+    private var homeIconStatus: String {
+        switch UIApplication.shared.alternateIconName {
+        case "BlackBin":
+            return "Refuse (grey)"
+        case .some(let name):
+            return name
+        case nil:
+            return "Recycling (green)"
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -63,6 +75,8 @@ struct SettingsView: View {
 
                 if savedUprn != nil {
                     Section {
+                        LabeledContent("Home screen icon", value: homeIconStatus)
+
                         Toggle("Collection reminders", isOn: $remindersEnabled)
 
                         if remindersEnabled {

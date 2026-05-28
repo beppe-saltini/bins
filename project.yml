@@ -27,6 +27,14 @@ targets:
           - "*.py"
           - "Assets.xcassets"
           - "PrivacyInfo.xcprivacy"
+          - "GreenBin@2x.png"
+          - "GreenBin@3x.png"
+          - "BlackBin@2x.png"
+          - "BlackBin@3x.png"
+          - "GreyBin@2x.png"
+          - "GreyBin@3x.png"
+          - "GreyBin-152.png"
+          - ".icon-cache"
     entitlements:
       path: BinsApp.entitlements
       properties:
@@ -34,6 +42,7 @@ targets:
           - group.MCZH73T4Z2.bins
     settings:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: BlackBin
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: MCZH73T4Z2
@@ -56,15 +65,7 @@ targets:
         BGTaskSchedulerPermittedIdentifiers:
           - com.beppe.BinsApp.refresh
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "9"
-        CFBundleIcons:
-          CFBundlePrimaryIcon:
-            CFBundleIconFiles:
-              - GreenBin
-          CFBundleAlternateIcons:
-            BlackBin:
-              CFBundleIconFiles:
-                - BlackBin
+        CFBundleVersion: "10"
   BinsWidget:
     type: app-extension
     platform: iOS
@@ -88,6 +89,6 @@ targets:
       properties:
         CFBundleDisplayName: BinsWidget
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "9"
+        CFBundleVersion: "10"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate app icons: green primary, dark-grey refuse alternate, notification thumbnails."""
+"""Generate App Icon sets (asset catalog) and notification thumbnails."""
 import subprocess
 import sys
 from pathlib import Path
@@ -8,12 +8,26 @@ ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent
 CACHE = ROOT / ".icon-cache"
 APPICON_DIR = ROOT / "Assets.xcassets" / "AppIcon.appiconset"
-GREEN_BUNDLE = ROOT / "GreenBin@3x.png"
-BLACK_BUNDLE = ROOT / "BlackBin@3x.png"
+BLACK_APPICON_DIR = ROOT / "Assets.xcassets" / "BlackBin.appiconset"
 PAD_COLOR = "E8E8E8"
 GREY_PROFILE = "/System/Library/ColorSync/Profiles/Generic Gray Gamma 2.2 Profile.icc"
-# Original bin artwork commit (before solid-colour placeholders).
 ARTWORK_COMMIT = "9b94ad2"
+
+APPICON_CONTENTS = """{
+  "images" : [
+    {
+      "filename" : "{filename}",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
+"""
 
 
 def sips_greyscale(src: Path, dest: Path) -> None:
@@ -22,7 +36,7 @@ def sips_greyscale(src: Path, dest: Path) -> None:
         ["sips", "-s", "format", "png", "-m", GREY_PROFILE, str(src), "--out", str(dest)],
         check=True,
     )
-    print(f"  {dest.relative_to(REPO)} (greyscale from {src.name})")
+    print(f"  {dest.relative_to(REPO)} (greyscale)")
 
 
 def sips_resize(src: Path, dest: Path, size: int) -> None:
@@ -32,6 +46,7 @@ def sips_resize(src: Path, dest: Path, size: int) -> None:
 
 
 def sips_homescreen_icon(src: Path, dest: Path, size: int) -> None:
+    """Opaque light-grey tile so the bin shape is visible on the home screen."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     inner = max(1, int(size * 0.86))
     subprocess.run(["sips", "-z", str(inner), str(inner), str(src), "--out", str(dest)], check=True)
@@ -52,8 +67,9 @@ def sips_homescreen_icon(src: Path, dest: Path, size: int) -> None:
     print(f"  {dest.relative_to(REPO)} ({size}x{size}, padded)")
 
 
-def is_real_artwork(path: Path) -> bool:
-    return path.exists() and path.stat().st_size >= MIN_ARTWORK_BYTES
+def write_appiconset(dir: Path, png_name: str) -> None:
+    dir.mkdir(parents=True, exist_ok=True)
+    (dir / "Contents.json").write_text(APPICON_CONTENTS.replace("{filename}", png_name))
 
 
 def restore_artwork_from_git() -> tuple[Path, Path]:
@@ -82,27 +98,22 @@ def main() -> None:
         green_src = CACHE / "green-source@3x.png"
         black_notify_src = CACHE / "black-notify-source@3x.png"
 
-    # Refuse-week home icon: dark grey bin (from green), not black silhouette on transparency.
-    refuse_home = CACHE / "refuse-home@3x.png"
-    print("Building refuse-week home icon (dark grey bin)...")
-    sips_greyscale(green_src, refuse_home)
+    refuse_src = CACHE / "refuse-home@3x.png"
+    print("Building refuse alternate artwork (dark grey bin)...")
+    sips_greyscale(green_src, refuse_src)
 
-    print("Home-screen icons...")
-    sips_homescreen_icon(green_src, GREEN_BUNDLE, 180)
-    sips_homescreen_icon(green_src, ROOT / "GreenBin@2x.png", 120)
-    sips_homescreen_icon(refuse_home, BLACK_BUNDLE, 180)
-    sips_homescreen_icon(refuse_home, ROOT / "BlackBin@2x.png", 120)
+    print("Asset catalog: AppIcon (green primary)...")
+    write_appiconset(APPICON_DIR, "AppIcon-1024.png")
+    sips_homescreen_icon(green_src, APPICON_DIR / "AppIcon-1024.png", 1024)
+    sips_homescreen_icon(green_src, REPO / "AppStore" / "app-icon-1024.png", 1024)
+
+    print("Asset catalog: BlackBin (refuse alternate)...")
+    write_appiconset(BLACK_APPICON_DIR, "BlackBin-1024.png")
+    sips_homescreen_icon(refuse_src, BLACK_APPICON_DIR / "BlackBin-1024.png", 1024)
 
     print("Notification thumbnails...")
     sips_resize(green_src, ROOT / "GreenBin-152.png", 152)
     sips_resize(black_notify_src, ROOT / "BlackBin-152.png", 152)
-
-    print("App Store / asset catalog (green primary)...")
-    for dest in (
-        APPICON_DIR / "AppIcon-1024.png",
-        REPO / "AppStore" / "app-icon-1024.png",
-    ):
-        sips_homescreen_icon(green_src, dest, 1024)
 
     print("Done.")
 

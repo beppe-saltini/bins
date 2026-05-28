@@ -43,7 +43,7 @@ struct ContentView: View {
         let r = await BinService.getCurrentBin(postcode: pc, uprn: uprn, addressText: at)
         result = r
         // App icon (green/black) updates every time you open the app.
-        BinService.updateIcon(type: r.collection.type)
+        await BinService.updateIcon(type: r.collection.type)
         WidgetCenter.shared.reloadAllTimelines()
         await ReminderScheduler.rescheduleFromStoredAddress()
     }

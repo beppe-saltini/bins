@@ -169,15 +169,14 @@ enum BinService {
               let uprn = sharedDefaults.string(forKey: "uprn"),
               let addressText = sharedDefaults.string(forKey: "addressText") else { return }
         let result = await getCurrentBin(postcode: postcode, uprn: uprn, addressText: addressText)
-        await MainActor.run {
-            updateIcon(type: result.collection.type)
-        }
+        await updateIcon(type: result.collection.type)
     }
 
+    @MainActor
     static func updateIcon(type: BinType) {
         guard UIApplication.shared.supportsAlternateIcons else { return }
 
-        // Primary icon is green; only switch to alternate for refuse week.
+        // Primary AppIcon (green); refuse week uses BlackBin from asset catalog.
         let desired: String? = (type == .black) ? "BlackBin" : nil
         guard UIApplication.shared.alternateIconName != desired else { return }
 
