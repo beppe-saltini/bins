@@ -27,13 +27,6 @@ targets:
           - "*.py"
           - "Assets.xcassets"
           - "PrivacyInfo.xcprivacy"
-          - "GreenBin@2x.png"
-          - "GreenBin@3x.png"
-          - "BlackBin@2x.png"
-          - "BlackBin@3x.png"
-          - "GreyBin@2x.png"
-          - "GreyBin@3x.png"
-          - "GreyBin-152.png"
           - ".icon-cache"
     entitlements:
       path: BinsApp.entitlements
@@ -42,7 +35,7 @@ targets:
           - group.MCZH73T4Z2.bins
     settings:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: BlackBin
+      INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE: "NO"
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: MCZH73T4Z2
@@ -51,6 +44,14 @@ targets:
       - target: BinsWidget
         embed: true
         codeSign: true
+    postBuildScripts:
+      - name: Use production GreenBin as primary icon
+        script: |
+          PLIST="${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Info.plist"
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons:CFBundlePrimaryIcon" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon dict" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconFiles array" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconFiles:0 string GreenBin" "$PLIST"
     info:
       path: Info.plist
       properties:
@@ -64,8 +65,16 @@ targets:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:
           - com.beppe.BinsApp.refresh
+        CFBundleIcons:
+          CFBundlePrimaryIcon:
+            CFBundleIconFiles:
+              - GreenBin
+          CFBundleAlternateIcons:
+            BlackBin:
+              CFBundleIconFiles:
+                - BlackBin
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "10"
+        CFBundleVersion: "13"
   BinsWidget:
     type: app-extension
     platform: iOS
@@ -89,6 +98,6 @@ targets:
       properties:
         CFBundleDisplayName: BinsWidget
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "10"
+        CFBundleVersion: "13"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

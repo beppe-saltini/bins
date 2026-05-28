@@ -176,7 +176,7 @@ enum BinService {
     static func updateIcon(type: BinType) {
         guard UIApplication.shared.supportsAlternateIcons else { return }
 
-        // Primary AppIcon (green); refuse week uses BlackBin from asset catalog.
+        // Published icons: GreenBin (primary) and BlackBin loose PNGs via CFBundleIcons.
         let desired: String? = (type == .black) ? "BlackBin" : nil
         guard UIApplication.shared.alternateIconName != desired else { return }
 

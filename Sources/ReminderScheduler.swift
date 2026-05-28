@@ -4,7 +4,6 @@ import UserNotifications
 enum ReminderScheduler {
     private static let identifierPrefix = "bin-reminder-"
     private static let maxScheduled = 8
-    private static let attachmentCacheFolder = "BinNotificationAttachments"
 
     private static var calendar: Calendar {
         var cal = Calendar(identifier: .gregorian)
@@ -110,9 +109,6 @@ enum ReminderScheduler {
             content.title = "Bin reminder"
             content.body = notificationBody(for: collection.type)
             content.sound = .default
-            if let attachment = attachment(for: collection.type) {
-                content.attachments = [attachment]
-            }
 
             var comps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
             comps.second = 0
@@ -151,39 +147,5 @@ enum ReminderScheduler {
         case .black:
             return "Refuse (black bin) collection tomorrow"
         }
-    }
-
-    /// Colored bin image shown in the notification (green / black). Cached so pending requests stay valid until delivery.
-    private static func attachment(for type: BinType) -> UNNotificationAttachment? {
-        let resourceName = type == .green ? "GreenBin-152" : "BlackBin-152"
-        let cacheFileName = type == .green ? "notification-green.png" : "notification-black.png"
-
-        guard let bundleURL = Bundle.main.url(forResource: resourceName, withExtension: "png") else {
-            return nil
-        }
-
-        let fileManager = FileManager.default
-        guard let cacheRoot = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
-            return nil
-        }
-
-        let cacheDir = cacheRoot.appendingPathComponent(attachmentCacheFolder, isDirectory: true)
-        try? fileManager.createDirectory(at: cacheDir, withIntermediateDirectories: true)
-
-        let fileURL = cacheDir.appendingPathComponent(cacheFileName)
-        if !fileManager.fileExists(atPath: fileURL.path) {
-            try? fileManager.removeItem(at: fileURL)
-            do {
-                try fileManager.copyItem(at: bundleURL, to: fileURL)
-            } catch {
-                return nil
-            }
-        }
-
-        return try? UNNotificationAttachment(
-            identifier: "bin-\(type.rawValue)",
-            url: fileURL,
-            options: [UNNotificationAttachmentOptionsTypeHintKey: "public.png"]
-        )
     }
 }
