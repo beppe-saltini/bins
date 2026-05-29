@@ -35,7 +35,7 @@ targets:
           - group.MCZH73T4Z2.bins
     settings:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE: "NO"
+      INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE: "YES"
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
       DEVELOPMENT_TEAM: MCZH73T4Z2
@@ -44,14 +44,6 @@ targets:
       - target: BinsWidget
         embed: true
         codeSign: true
-    postBuildScripts:
-      - name: Use production GreenBin as primary icon
-        script: |
-          PLIST="${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Info.plist"
-          /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons:CFBundlePrimaryIcon" "$PLIST" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon dict" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconFiles array" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconFiles:0 string GreenBin" "$PLIST"
     info:
       path: Info.plist
       properties:
@@ -65,16 +57,14 @@ targets:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:
           - com.beppe.BinsApp.refresh
+        CFBundleIconName: AppIcon
         CFBundleIcons:
-          CFBundlePrimaryIcon:
-            CFBundleIconFiles:
-              - GreenBin
           CFBundleAlternateIcons:
             BlackBin:
               CFBundleIconFiles:
                 - BlackBin
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "13"
+        CFBundleVersion: "14"
   BinsWidget:
     type: app-extension
     platform: iOS
@@ -98,6 +88,6 @@ targets:
       properties:
         CFBundleDisplayName: BinsWidget
         CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "13"
+        CFBundleVersion: "14"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

@@ -1,8 +1,8 @@
-# Deploy 1.0.2 (13) to App Store
+# Deploy 1.0.2 (14) to App Store
 
 ## Done in repo
 
-- Version **1.0.2**, build **13**
+- Version **1.0.2**, build **14** (use 14 after validation fix; 13 failed upload)
 - Production icons + simple reminders (`0faf9eb`)
 - `AppStore/whats_new.txt` — paste into **What’s New**
 - `AppStore/description.txt` — updated with reminders line
@@ -22,7 +22,7 @@
 1. [App Store Connect](https://appstoreconnect.apple.com) → **Bins**
 2. **+ Version** → **1.0.2** (skip if draft exists)
 3. **What’s New** → copy from `AppStore/whats_new.txt`
-4. Select build **13** when processing finishes (TestFlight tab)
+4. Select build **14** when processing finishes (TestFlight tab)
 5. **Review notes** → copy from `AppStore/review_notes.txt`
 6. **App Privacy** — no data collected; local notifications only
 7. **Submit for Review**
