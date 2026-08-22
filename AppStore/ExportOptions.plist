@@ -2,8 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>authenticationMethod</key>
+	<string>apiKey</string>
+	<key>apiKey</key>
+	<dict>
+		<key>id</key>
+		<string>PFVCG3GWZ5</string>
+		<key>issuerId</key>
+		<string>f72efd70-c801-416b-8f1b-419ab60091f6</string>
+		<key>key</key>
+		<string>/Users/beppe/.appstoreconnect/private_keys/AuthKey_PFVCG3GWZ5.p8</string>
+	</dict>
 	<key>destination</key>
 	<string>upload</string>
+	<key>manageAppVersionAndBuildNumber</key>
+	<true/>
 	<key>method</key>
 	<string>app-store-connect</string>
 	<key>teamID</key>
