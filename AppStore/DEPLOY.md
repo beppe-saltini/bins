@@ -1,28 +1,34 @@
-# Deploy 1.0.2 (14) to App Store
+# Deploy 1.0.3 (15) to App Store
 
 ## Done in repo
 
-- Version **1.0.2**, build **14** (use 14 after validation fix; 13 failed upload)
-- Production icons + simple reminders (`0faf9eb`)
+- Version **1.0.3**, build **15**
+- Fix Central Bedfordshire API (council migrated to new waste collection schedule URLs)
 - `AppStore/whats_new.txt` — paste into **What’s New**
-- `AppStore/description.txt` — updated with reminders line
 - `AppStore/review_notes.txt` — for App Review
 
-## Your steps in Xcode (≈10 min)
+## Archive & upload (CLI)
 
-1. Open `BinsApp.xcodeproj`
-2. Target **BinsApp** → **Signing & Capabilities** → Team **MCZH73T4Z2**, **Automatically manage signing** on
-3. Same for **BinsWidget** target
-4. Scheme **BinsApp** → destination **Any iOS Device (arm64)**
-5. **Product → Archive**
-6. **Distribute App → App Store Connect → Upload**
+```bash
+cd /Users/beppe/Projects/bins
+xcodegen generate
+xcodebuild -scheme BinsApp -project BinsApp.xcodeproj \
+  -configuration Release -destination 'generic/platform=iOS' \
+  -archivePath build/BinsApp.xcarchive archive \
+  -allowProvisioningUpdates
+xcodebuild -exportArchive \
+  -archivePath build/BinsApp.xcarchive \
+  -exportOptionsPlist AppStore/ExportOptions.plist \
+  -exportPath build/export \
+  -allowProvisioningUpdates
+```
 
 ## App Store Connect
 
 1. [App Store Connect](https://appstoreconnect.apple.com) → **Bins**
-2. **+ Version** → **1.0.2** (skip if draft exists)
+2. **+ Version** → **1.0.3** (skip if draft exists)
 3. **What’s New** → copy from `AppStore/whats_new.txt`
-4. Select build **14** when processing finishes (TestFlight tab)
+4. Select build **15** when processing finishes (TestFlight tab)
 5. **Review notes** → copy from `AppStore/review_notes.txt`
 6. **App Privacy** — no data collected; local notifications only
 7. **Submit for Review**
@@ -34,5 +40,5 @@
 
 ## If upload fails
 
-- Increment build in `project.yml` (`CFBundleVersion: "14"`), run `xcodegen generate`, archive again
+- Increment build in `project.yml` (`CFBundleVersion`), run `xcodegen generate`, archive again
 - Build number must be higher than any build already uploaded

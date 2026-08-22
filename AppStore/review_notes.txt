@@ -6,10 +6,14 @@ How to test:
 1. Open the app (no login required).
 2. Enter postcode SG18 8BQ and tap Search.
 3. Select an address from the list (e.g. 1 Mill Close, SG18 8BQ).
-4. The main screen shows the next collection type (Refuse/Recycling) and date.
+4. The main screen should show the next collection as Recycling (green bin) on 27 August 2026 — not refuse.
 5. Add the Bins widget from the home screen to verify the widget shows the same data after setup.
 
-The app contacts centralbedfordshire.gov.uk over HTTPS to look up addresses and collection schedules, similar to using the council’s public bin-day checker in a browser. No account is created in our app.
+The app contacts centralbedfordshire.gov.uk over HTTPS using the council’s current waste collection schedule pages:
+- /waste-and-recycling/waste-collection-schedule/find?postcode=…
+- /waste-and-recycling/waste-collection-schedule/view/{uprn}
+
+No account is created in our app.
 
 Background fetch may refresh the app icon and widget on Friday mornings (best-effort). Opening the app any day updates the home screen icon to green (recycling) or black (refuse). Reminders are a simple text notification the evening before collection.
 

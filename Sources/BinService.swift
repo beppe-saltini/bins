@@ -29,25 +29,28 @@ struct Address: Identifiable, Hashable {
 let sharedDefaults = UserDefaults(suiteName: "group.MCZH73T4Z2.bins") ?? .standard
 
 enum BinService {
-    private static let endpoint = URL(string: "https://www.centralbedfordshire.gov.uk/info/163/bins_and_waste_collections_-_check_bin_collection_days")!
+    private static let basePath = "https://www.centralbedfordshire.gov.uk/waste-and-recycling/waste-collection-schedule"
 
     // MARK: - Public API
 
     static func fetchAddresses(postcode: String) async throws -> [Address] {
-        let body = formEncode(["postcode": postcode, "search": "Search"])
-        let html = try await post(body: body)
-        return parseAddresses(from: html)
+        let normalized = postcode.replacingOccurrences(of: " ", with: "")
+        var components = URLComponents(string: "\(basePath)/find")!
+        components.queryItems = [URLQueryItem(name: "postcode", value: normalized)]
+        let html = try await get(url: components.url!)
+        let addresses = parseAddresses(from: html)
+        if addresses.isEmpty {
+            throw URLError(.fileDoesNotExist)
+        }
+        return addresses
     }
 
     static func upcomingCollections(postcode: String, uprn: String, addressText: String) async -> UpcomingSchedule {
+        _ = postcode
+        _ = addressText
         do {
-            let body = formEncode([
-                "postcode": postcode,
-                "address": uprn,
-                "address_text": addressText,
-                "search": "View"
-            ])
-            let html = try await post(body: body)
+            let url = URL(string: "\(basePath)/view/\(uprn)")!
+            let html = try await get(url: url)
             let collections = parseCollections(from: html)
             let today = calendar.startOfDay(for: Date())
             let upcoming = collections.filter { $0.date >= today }
@@ -72,28 +75,26 @@ enum BinService {
 
     // MARK: - Networking
 
-    private static func post(body: String) async throws -> String {
-        var req = URLRequest(url: endpoint)
-        req.httpMethod = "POST"
-        req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        req.httpBody = body.data(using: .utf8)
+    private static func get(url: URL) async throws -> String {
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
         req.timeoutInterval = 15
-        let (data, _) = try await URLSession.shared.data(for: req)
-        return String(data: data, encoding: .utf8) ?? ""
-    }
-
-    private static func formEncode(_ params: [String: String]) -> String {
-        var allowed = CharacterSet.alphanumerics
-        allowed.insert(charactersIn: "-._~")
-        return params.map {
-            "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: allowed) ?? $0.value)"
-        }.joined(separator: "&")
+        let (data, response) = try await URLSession.shared.data(for: req)
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        let html = String(data: data, encoding: .utf8) ?? ""
+        if html.contains("Page not found") || html.contains("page-not-found") {
+            throw URLError(.fileDoesNotExist)
+        }
+        return html
     }
 
     // MARK: - HTML Parsing
 
     private static func parseAddresses(from html: String) -> [Address] {
-        let pattern = #"<option value='(\d+)'>([^<]+)</option>"#
+        let pattern = #"<option value=["'](\d+)["']>([^<]+)</option>"#
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return [] }
         let range = NSRange(html.startIndex..., in: html)
         return regex.matches(in: html, range: range).compactMap { match in
@@ -104,30 +105,66 @@ enum BinService {
     }
 
     private static func parseCollections(from html: String) -> [BinCollection] {
-        let pattern = #"<h3>([^<]+)</h3>(.*?)(?=<h3|$)"#
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: .dotMatchesLineSeparators) else { return [] }
+        let itemPattern = #"<li class="waste-collection__day">(.*?)</li>"#
+        guard let itemRegex = try? NSRegularExpression(pattern: itemPattern, options: .dotMatchesLineSeparators) else {
+            return []
+        }
+
+        let datePattern = #"datetime="(\d{2}-\d{2}-\d{4})""#
+        let typePattern = #"waste-collection__day--type">\s*([^<]+)"#
+        guard let dateRegex = try? NSRegularExpression(pattern: datePattern),
+              let typeRegex = try? NSRegularExpression(pattern: typePattern, options: .dotMatchesLineSeparators) else {
+            return []
+        }
 
         let fmt = DateFormatter()
-        fmt.dateFormat = "EEEE, d MMMM yyyy"
+        fmt.dateFormat = "dd-MM-yyyy"
         fmt.locale = Locale(identifier: "en_GB")
 
+        var grouped: [Date: BinType] = [:]
         let range = NSRange(html.startIndex..., in: html)
-        return regex.matches(in: html, range: range).compactMap { match in
-            guard let r1 = Range(match.range(at: 1), in: html),
-                  let r2 = Range(match.range(at: 2), in: html) else { return nil }
-            let dateStr = String(html[r1]).trimmingCharacters(in: .whitespaces)
-            guard let date = fmt.date(from: dateStr) else { return nil }
-            let content = String(html[r2])
-            if content.contains("Refuse (black bin)") {
-                return BinCollection(date: date, type: .black)
-            } else if content.contains("Recycling") {
-                return BinCollection(date: date, type: .green)
+
+        for match in itemRegex.matches(in: html, range: range) {
+            guard let itemRange = Range(match.range(at: 1), in: html) else { continue }
+            let item = String(html[itemRange])
+            let itemNSRange = NSRange(item.startIndex..., in: item)
+
+            guard let dateMatch = dateRegex.firstMatch(in: item, range: itemNSRange),
+                  let dateStrRange = Range(dateMatch.range(at: 1), in: item),
+                  let typeMatch = typeRegex.firstMatch(in: item, range: itemNSRange),
+                  let typeRange = Range(typeMatch.range(at: 1), in: item) else { continue }
+
+            let dateText = String(item[dateStrRange])
+            let typeText = String(item[typeRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let date = fmt.date(from: dateText),
+                  let binType = binType(from: typeText) else { continue }
+
+            let day = calendar.startOfDay(for: date)
+            if let existing = grouped[day] {
+                if existing == .green, binType == .black {
+                    grouped[day] = .black
+                }
+            } else {
+                grouped[day] = binType
             }
-            return nil
-        }.sorted { $0.date < $1.date }
+        }
+
+        return grouped.map { BinCollection(date: $0.key, type: $0.value) }
+            .sorted { $0.date < $1.date }
     }
 
-    // MARK: - App Icon (alternate icon on the home screen app grid)
+    private static func binType(from label: String) -> BinType? {
+        let lower = label.lowercased()
+        if lower.contains("refuse") || lower.contains("black bin") {
+            return .black
+        }
+        if lower.contains("recycling") {
+            return .green
+        }
+        return nil
+    }
+
+    // MARK: - App Icon
 
     private static var calendar: Calendar {
         var cal = Calendar(identifier: .gregorian)
@@ -136,12 +173,10 @@ enum BinService {
         return cal
     }
 
-    /// Friday = weekday 6 in `Calendar` (Sunday is 1).
     static func isFriday(_ date: Date = Date()) -> Bool {
         calendar.component(.weekday, from: date) == 6
     }
 
-    /// Next Friday at 07:00 local time, for scheduling background refresh.
     static func nextFridayMorning(from date: Date = Date()) -> Date {
         let startOfToday = calendar.startOfDay(for: date)
         let weekday = calendar.component(.weekday, from: date)
@@ -163,7 +198,6 @@ enum BinService {
         return result
     }
 
-    /// Fetches the next collection and updates the alternate app icon (green / black).
     static func refreshAppIconFromStoredAddress() async {
         guard let postcode = sharedDefaults.string(forKey: "postcode"),
               let uprn = sharedDefaults.string(forKey: "uprn"),
@@ -176,7 +210,6 @@ enum BinService {
     static func updateIcon(type: BinType) {
         guard UIApplication.shared.supportsAlternateIcons else { return }
 
-        // Published icons: GreenBin (primary) and BlackBin loose PNGs via CFBundleIcons.
         let desired: String? = (type == .black) ? "BlackBin" : nil
         guard UIApplication.shared.alternateIconName != desired else { return }
 
@@ -201,17 +234,17 @@ enum BinService {
             return BinResult(collection: BinCollection(date: Date(), type: .black), isGuess: true)
         }
 
-        let days = abs(Calendar.current.dateComponents([.day], from: refDate, to: Date()).day ?? 0)
+        let days = abs(calendar.dateComponents([.day], from: refDate, to: Date()).day ?? 0)
         let weeks = days / 7
         let type: BinType = (weeks % 2 == 0) ? refType : (refType == .black ? .green : .black)
 
-        let refWeekday = Calendar.current.component(.weekday, from: refDate)
-        var next = Calendar.current.startOfDay(for: Date())
+        let refWeekday = calendar.component(.weekday, from: refDate)
+        var next = calendar.startOfDay(for: Date())
         for _ in 0..<7 {
-            if Calendar.current.component(.weekday, from: next) == refWeekday {
+            if calendar.component(.weekday, from: next) == refWeekday {
                 break
             }
-            next = Calendar.current.date(byAdding: .day, value: 1, to: next)!
+            next = calendar.date(byAdding: .day, value: 1, to: next)!
         }
 
         return BinResult(collection: BinCollection(date: next, type: type), isGuess: true)

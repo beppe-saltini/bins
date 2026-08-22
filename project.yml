@@ -38,7 +38,7 @@ targets:
       INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE: "YES"
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
-      DEVELOPMENT_TEAM: MCZH73T4Z2
+      DEVELOPMENT_TEAM: MDPQ6ND87Z
       TARGETED_DEVICE_FAMILY: "1"
     dependencies:
       - target: BinsWidget
@@ -63,8 +63,8 @@ targets:
             BlackBin:
               CFBundleIconFiles:
                 - BlackBin
-        CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "14"
+        CFBundleShortVersionString: "1.0.3"
+        CFBundleVersion: "15"
   BinsWidget:
     type: app-extension
     platform: iOS
@@ -80,14 +80,14 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.beppe.BinsApp.BinsWidget
       CODE_SIGN_IDENTITY: "Apple Development"
       CODE_SIGN_STYLE: Automatic
-      DEVELOPMENT_TEAM: MCZH73T4Z2
+      DEVELOPMENT_TEAM: MDPQ6ND87Z
       CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION: "YES"
       TARGETED_DEVICE_FAMILY: "1"
     info:
       path: BinsWidget-Info.plist
       properties:
         CFBundleDisplayName: BinsWidget
-        CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "14"
+        CFBundleShortVersionString: "1.0.3"
+        CFBundleVersion: "15"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

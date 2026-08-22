@@ -168,11 +168,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					AD37FF16A84A49B63046870A = {
-						DevelopmentTeam = MCZH73T4Z2;
+						DevelopmentTeam = MDPQ6ND87Z;
 						ProvisioningStyle = Automatic;
 					};
 					E13BB65A2F282BB47299F576 = {
-						DevelopmentTeam = MCZH73T4Z2;
+						DevelopmentTeam = MDPQ6ND87Z;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -260,7 +260,7 @@
 				CODE_SIGN_ENTITLEMENTS = BinsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MCZH73T4Z2;
+				DEVELOPMENT_TEAM = MDPQ6ND87Z;
 				INFOPLIST_FILE = "BinsWidget-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -399,7 +399,7 @@
 				CODE_SIGN_ENTITLEMENTS = BinsApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MCZH73T4Z2;
+				DEVELOPMENT_TEAM = MDPQ6ND87Z;
 				INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -419,7 +419,7 @@
 				CODE_SIGN_ENTITLEMENTS = BinsApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MCZH73T4Z2;
+				DEVELOPMENT_TEAM = MDPQ6ND87Z;
 				INFOPLIST_ENABLE_CFBUNDLEICONS_MERGE = YES;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -439,7 +439,7 @@
 				CODE_SIGN_ENTITLEMENTS = BinsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MCZH73T4Z2;
+				DEVELOPMENT_TEAM = MDPQ6ND87Z;
 				INFOPLIST_FILE = "BinsWidget-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
