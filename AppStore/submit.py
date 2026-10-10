@@ -13,8 +13,8 @@ ISSUER_ID = "f72efd70-c801-416b-8f1b-419ab60091f6"
 KEY_PATH = Path.home() / ".appstoreconnect/private_keys/AuthKey_PFVCG3GWZ5.p8"
 BASE = "https://api.appstoreconnect.apple.com"
 BUNDLE_ID = "com.beppe.BinsApp"
-VERSION = "1.0.3"
-BUILD = "15"
+VERSION = "1.0.4"
+BUILD = "16"
 ROOT = Path(__file__).resolve().parents[1]
 
 

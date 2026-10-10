@@ -12,6 +12,7 @@
 		11297D9C54D6B14E93962D12 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 64B485548AF34F09A1156F1A /* PrivacyInfo.xcprivacy */; };
 		27609A21F197DA5B6897F774 /* ReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C12C44A05F1221E7B4BEDF3 /* ReminderScheduler.swift */; };
 		2E32D882E0BABE1CDA300EF8 /* BinsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCAB58E9B19DA587A0D9992 /* BinsWidget.swift */; };
+		363D08A946CAB01AF9903DD5 /* WidgetTutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7223AE5051A3D198261E7B /* WidgetTutorialView.swift */; };
 		52AA314BE9B7E1ADBC9F889F /* GreenBin@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 521FADBA0A3B6DF5F646971D /* GreenBin@3x.png */; };
 		5F31A20B728787159D3FCA80 /* BinsWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3999638BEC6777E6ADD023C0 /* BinsWidget.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		64F1955B1A5688688DC8BAEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CFE023E1A47F191548123A6 /* Assets.xcassets */; };
@@ -62,6 +63,7 @@
 		8F1AD43025968D9D3E3BE722 /* BlackBin@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackBin@3x.png"; sourceTree = "<group>"; };
 		B092DC37D05877C1B00808EE /* BinsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinsApp.swift; sourceTree = "<group>"; };
 		B5DA178BD38360269C809522 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BC7223AE5051A3D198261E7B /* WidgetTutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTutorialView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -94,6 +96,7 @@
 				16501DB69F0A79AB49C4D3E7 /* ContentView.swift */,
 				5C12C44A05F1221E7B4BEDF3 /* ReminderScheduler.swift */,
 				B5DA178BD38360269C809522 /* SettingsView.swift */,
+				BC7223AE5051A3D198261E7B /* WidgetTutorialView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 				AFFE215E92F0402FE6FD0A64 /* ContentView.swift in Sources */,
 				27609A21F197DA5B6897F774 /* ReminderScheduler.swift in Sources */,
 				8B739B1C73D5DDC6AACF193D /* SettingsView.swift in Sources */,
+				363D08A946CAB01AF9903DD5 /* WidgetTutorialView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

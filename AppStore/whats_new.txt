@@ -1,3 +1,2 @@
-• Fix for Central Bedfordshire’s updated bin collection website
-• Address lookup and collection dates work again after the council site change
-• Widget and app icon stay in sync with the correct next bin
+• New step-by-step guide for adding the Bins widget to your Home Screen
+• Reopen the guide any time from Settings → Widget

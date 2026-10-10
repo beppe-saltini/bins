@@ -63,8 +63,8 @@ targets:
             BlackBin:
               CFBundleIconFiles:
                 - BlackBin
-        CFBundleShortVersionString: "1.0.3"
-        CFBundleVersion: "15"
+        CFBundleShortVersionString: "1.0.4"
+        CFBundleVersion: "16"
   BinsWidget:
     type: app-extension
     platform: iOS
@@ -87,7 +87,7 @@ targets:
       path: BinsWidget-Info.plist
       properties:
         CFBundleDisplayName: BinsWidget
-        CFBundleShortVersionString: "1.0.3"
-        CFBundleVersion: "15"
+        CFBundleShortVersionString: "1.0.4"
+        CFBundleVersion: "16"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension

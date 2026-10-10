@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var error: String?
     @State private var reminderTime = Calendar.current.date(from: DateComponents(hour: 20, minute: 0)) ?? Date()
     @State private var notificationsDenied = false
+    @State private var showWidgetTutorial = false
 
     private var isFirstLaunch: Bool { savedUprn == nil }
 
@@ -88,6 +89,14 @@ struct SettingsView: View {
                             Text("Notifies you the evening before each bin collection.")
                         }
                     }
+
+                    Section("Widget") {
+                        Button {
+                            showWidgetTutorial = true
+                        } label: {
+                            Label("How to add the widget", systemImage: "square.grid.2x2")
+                        }
+                    }
                 }
 
                 if let error {
@@ -97,6 +106,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Setup")
+            .sheet(isPresented: $showWidgetTutorial) {
+                WidgetTutorialView(sample: nil) {}
+            }
             .toolbar {
                 if !isFirstLaunch {
                     ToolbarItem(placement: .cancellationAction) {

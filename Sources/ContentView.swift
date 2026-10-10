@@ -8,8 +8,11 @@ struct ContentView: View {
     @AppStorage("postcode", store: sharedDefaults) private var postcode: String?
     @AppStorage("addressText", store: sharedDefaults) private var addressText: String?
 
+    @AppStorage("widgetTutorialSeen", store: sharedDefaults) private var widgetTutorialSeen = false
+
     @State private var result: BinResult?
     @State private var showSettings = false
+    @State private var showWidgetTutorial = false
 
     var body: some View {
         Group {
@@ -24,7 +27,16 @@ struct ContentView: View {
                 }
             }
         }
+        .sheet(isPresented: $showWidgetTutorial) {
+            WidgetTutorialView(sample: result?.collection) {
+                widgetTutorialSeen = true
+            }
+        }
         .task(id: uprn) {
+            // Shown once, right after the address is first set up.
+            if uprn != nil, !widgetTutorialSeen {
+                showWidgetTutorial = true
+            }
             await refresh()
         }
         .onChange(of: scenePhase) { _, newPhase in
